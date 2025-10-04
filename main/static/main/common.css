@@ -1,0 +1,140 @@
+@import url('https://fonts.cdnfonts.com/css/sequel-sans');
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-display: 'Sequel Sans', 'Sequel', sans-serif;
+    --font-body: 'Satoshi', sans-serif;
+    --font-accent: 'Bricolage Grotesque', sans-serif;
+    --color-bg: #03060D;
+    --color-text: #E4E4E4;
+    --color-primary: #006FEE;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+a {
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+}
+
+.primary-btn {
+    background-color: var(--color-primary);
+    color: #E4E4E4;
+    border-radius: 10px;
+    width: 230px;
+    height: 50px;
+    border: none;
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    box-shadow: 0 0 0 rgba(0, 111, 238, 0);
+}
+
+.primary-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 111, 238, 0.45), 0 0 18px rgba(0, 111, 238, 0.6);
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: #E4E4E4;
+    border-radius: 10px;
+    width: 230px;
+    height: 50px;
+    border: 1px solid var(--color-primary);
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: .2s;
+}
+
+.secondary-btn:hover {
+    transform: translateY(-4px);
+    background-color: #E4E4E4;
+    color: #03060D;
+    border: 1px solid transparent;
+}
+
+.bold {
+    font-weight: 900;
+}
+
+.home-header {
+    background: linear-gradient(180deg, #03060D 0%, #03060d00 100%);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0 30px;
+    height: 65px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.team-logo {
+    font-family: var(--font-display);
+    font-weight: 300;
+    color: #fff;
+    justify-self: start;
+}
+
+.project-title {
+    font-family: var(--font-accent);
+    font-size: 18px;
+    letter-spacing: 1.8px;
+    color: #fff;
+    text-align: center;
+    justify-self: center;
+}
+
+.nav-menu-toggler {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    cursor: pointer;
+    justify-self: end;
+}
+
+.nav-menu-toggler-line {
+    width: 27px;
+    height: 1px;
+    background-color: #fff;
+    transition: width 0.2s ease;
+}
+
+#nav-menu-line-2 {
+    width: 15px;
+}
+
+#nav-menu-line-3 {
+    width: 0;
+}
+
+.nav-menu-toggler:hover {
+    gap: 6px;
+}
+
+.nav-menu-toggler:hover #nav-menu-line-2,
+.nav-menu-toggler:hover #nav-menu-line-3 {
+    width: 27px;
+}

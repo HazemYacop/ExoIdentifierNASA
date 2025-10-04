@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <title>{{ page_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'main/common.css' %}">
     <link rel="stylesheet" href="{% static 'main/model.css' %}">
 </head>
 
@@ -43,11 +44,16 @@
                 <div class="preview-frame">
                     <img src="{% static 'main/assets/example-exoplanet.webp' %}" alt="Selected exoplanet preview" id="preview-image" data-default-src="{% static 'main/assets/example-exoplanet.webp' %}">
                 </div>
-                <div class="preview-meta">
+                <div class="preview-meta" id="preview-meta">
                     <p class="preview-filename" id="preview-filename">example-exoplanet.webp</p>
                     <p id="preview-status">Using default sample image</p>
                 </div>
-                <button class="primary-btn" type="button">Analyze Image</button>
+                <div class="prediction-result" id="prediction-result" hidden>
+                    <p class="prediction-label" id="prediction-label"></p>
+                    <p class="prediction-confidence" id="prediction-confidence"></p>
+                </div>
+                <p class="prediction-error" id="prediction-error" role="alert" hidden></p>
+                <button class="primary-btn analyze-btn" type="button" id="analyze-button" data-analyze-url="{% url 'main:analyze' %}">Analyze Image</button>
             </div>
         </section>
     </section>
@@ -107,12 +113,18 @@
             const previewImage = document.getElementById('preview-image');
             const previewFilename = document.getElementById('preview-filename');
             const previewStatus = document.getElementById('preview-status');
+            const analyzeButton = document.getElementById('analyze-button');
+            const resultBox = document.getElementById('prediction-result');
+            const resultLabel = document.getElementById('prediction-label');
+            const resultConfidence = document.getElementById('prediction-confidence');
+            const errorDisplay = document.getElementById('prediction-error');
+            const analyzeUrl = analyzeButton.dataset.analyzeUrl;
+            const defaultName = previewFilename.textContent;
+            const defaultStatus = previewStatus.textContent;
 
-            const defaultPreview = {
-                src: previewImage.getAttribute('data-default-src'),
-                name: previewFilename.textContent,
-                status: 'Using default sample image'
-            };
+            let cachedItems = readCache();
+            let currentSelection = null;
+            let currentObjectUrl = null;
 
             function readCache() {
                 try {
@@ -120,52 +132,69 @@
                     if (!raw) return [];
                     const parsed = JSON.parse(raw);
                     return Array.isArray(parsed) ? parsed : [];
-                } catch (_) {
+                } catch (error) {
+                    console.warn('Unable to read cached uploads', error);
                     return [];
                 }
             }
 
             function writeCache(items) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+                } catch (error) {
+                    console.warn('Unable to persist cached uploads', error);
+                }
             }
 
-            let cachedItems = readCache();
-
-            function highlightActive(id) {
-                cachedGrid.querySelectorAll('.cached-thumb').forEach((thumb) => {
-                    if (!id) {
-                        thumb.classList.remove('is-active');
-                        return;
-                    }
-                    thumb.classList.toggle('is-active', thumb.dataset.id === String(id));
-                });
+            function resetPreviewToDefault() {
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                    currentObjectUrl = null;
+                }
+                currentSelection = null;
+                previewImage.src = previewImage.dataset.defaultSrc;
+                previewFilename.textContent = defaultName;
+                previewStatus.textContent = defaultStatus;
+                resultBox.hidden = true;
+                errorDisplay.hidden = true;
             }
 
-            function setPreview(item) {
-                if (!item) {
-                    previewImage.src = defaultPreview.src;
-                    previewFilename.textContent = defaultPreview.name;
-                    previewStatus.textContent = defaultPreview.status;
-                    highlightActive(null);
+            function setPreview(selection) {
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                    currentObjectUrl = null;
+                }
+
+                currentSelection = selection;
+                resultBox.hidden = true;
+                errorDisplay.hidden = true;
+
+                if (!selection) {
+                    resetPreviewToDefault();
                     return;
                 }
-                previewImage.src = item.dataUrl;
-                previewFilename.textContent = item.name;
-                const updated = new Date(item.uploadedAt);
-                previewStatus.textContent = `Uploaded ${updated.toLocaleString()}`;
-                highlightActive(item.id);
+
+                previewFilename.textContent = selection.name;
+                previewStatus.textContent = selection.source === 'cache'
+                    ? 'Loaded from your recent uploads.'
+                    : 'Ready to analyze.';
+
+                if (selection.source === 'file') {
+                    currentObjectUrl = URL.createObjectURL(selection.file);
+                    previewImage.src = currentObjectUrl;
+                } else {
+                    previewImage.src = selection.dataUrl;
+                }
             }
 
             function renderCache() {
                 cachedGrid.innerHTML = '';
                 if (!cachedItems.length) {
-                    emptyState.style.display = 'block';
-                    clearButton.disabled = true;
+                    emptyState.hidden = false;
                     return;
                 }
-                emptyState.style.display = 'none';
-                clearButton.disabled = false;
 
+                emptyState.hidden = true;
                 cachedItems.forEach((item) => {
                     const button = document.createElement('button');
                     button.type = 'button';
@@ -183,7 +212,9 @@
                     button.appendChild(label);
 
                     button.addEventListener('click', () => {
-                        setPreview(item);
+                        cachedGrid.querySelectorAll('.cached-thumb').forEach((thumb) => thumb.classList.remove('is-active'));
+                        button.classList.add('is-active');
+                        setPreview({ source: 'cache', name: item.name, dataUrl: item.dataUrl });
                     });
 
                     cachedGrid.appendChild(button);
@@ -194,12 +225,11 @@
                 cachedItems = [item, ...cachedItems.filter((existing) => existing.id !== item.id)].slice(0, MAX_ITEMS);
                 writeCache(cachedItems);
                 renderCache();
-                setPreview(item);
             }
 
             function handleFiles(fileList) {
                 if (!fileList || !fileList.length) return;
-                const file = fileList[0];
+                const [file] = fileList;
                 if (!file.type.startsWith('image/')) {
                     previewStatus.textContent = 'Please select a valid image file.';
                     return;
@@ -207,13 +237,16 @@
 
                 const reader = new FileReader();
                 reader.onload = () => {
-                    const item = {
+                    const dataUrl = reader.result;
+                    const selection = { source: 'file', name: file.name, file, dataUrl };
+                    const cacheRecord = {
                         id: Date.now(),
                         name: file.name,
-                        dataUrl: reader.result,
-                        uploadedAt: new Date().toISOString()
+                        dataUrl,
+                        uploadedAt: new Date().toISOString(),
                     };
-                    addToCache(item);
+                    addToCache(cacheRecord);
+                    setPreview(selection);
                     fileInput.value = '';
                 };
                 reader.onerror = () => {
@@ -278,15 +311,81 @@
             clearButton.addEventListener('click', () => {
                 cachedItems = [];
                 writeCache(cachedItems);
-                renderCache();
-                setPreview(null);
+                cachedGrid.innerHTML = '';
+                emptyState.hidden = false;
+                resetPreviewToDefault();
+            });
+
+            async function selectionToFile(selection) {
+                if (!selection) {
+                    const response = await fetch(previewImage.dataset.defaultSrc);
+                    const blob = await response.blob();
+                    return new File([blob], defaultName, { type: blob.type || 'image/png' });
+                }
+                if (selection.source === 'file' && selection.file) {
+                    return selection.file;
+                }
+                const response = await fetch(selection.dataUrl);
+                const blob = await response.blob();
+                return new File([blob], selection.name, { type: blob.type || 'image/png' });
+            }
+
+            function getCsrfToken() {
+                const match = document.cookie.match(/csrftoken=([^;]+)/);
+                return match ? decodeURIComponent(match[1]) : '';
+            }
+
+            async function analyzeCurrentSelection() {
+                const file = await selectionToFile(currentSelection);
+                const formData = new FormData();
+                formData.append('image', file, file.name);
+
+                const response = await fetch(analyzeUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const payload = await response.json().catch(() => ({}));
+                    const errorMessage = payload.error || 'Analysis failed. Please try again later.';
+                    throw new Error(errorMessage);
+                }
+
+                return response.json();
+            }
+
+            analyzeButton.addEventListener('click', async () => {
+                errorDisplay.hidden = true;
+                analyzeButton.disabled = true;
+                analyzeButton.textContent = 'Analyzing...';
+                previewStatus.textContent = 'Sending image to the model...';
+
+                try {
+                    const data = await analyzeCurrentSelection();
+                    const isExoplanet = data.label === 'exoplanet';
+                    resultLabel.textContent = isExoplanet ? 'Likely an exoplanet' : 'Likely not an exoplanet';
+                    resultConfidence.textContent = `Confidence: ${(data.probability * 100).toFixed(1)}%`;
+                    resultBox.hidden = false;
+                    previewStatus.textContent = 'Analysis complete.';
+                } catch (error) {
+                    errorDisplay.textContent = error.message || 'Something went wrong while analyzing the image.';
+                    errorDisplay.hidden = false;
+                    previewStatus.textContent = 'Unable to analyze this image.';
+                } finally {
+                    analyzeButton.disabled = false;
+                    analyzeButton.textContent = 'Analyze Image';
+                }
             });
 
             renderCache();
             if (cachedItems.length) {
-                setPreview(cachedItems[0]);
+                setPreview({ source: 'cache', name: cachedItems[0].name, dataUrl: cachedItems[0].dataUrl });
+                cachedGrid.querySelector('.cached-thumb')?.classList.add('is-active');
             } else {
-                setPreview(null);
+                resetPreviewToDefault();
             }
         })();
     </script>
