@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-zp)hrw@_u(=wr1b6c^$emqpkxmq1cgu!anx&$#m0t2p$8j!mw^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'exoidentifier.app']
 
 
 # Application definition
@@ -67,7 +67,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ExoIdentifierNASA.wsgi.application'
+# WSGI_APPLICATION = 'ExoIdentifierNASA.wsgi.application'
+WSGI_APPLICATION = 'api.wsgi.app'
+app = get_wsgi_application()
 
 
 # Database
