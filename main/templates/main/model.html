@@ -1,0 +1,295 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ page_title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'main/model.css' %}">
+</head>
+
+<body>
+    <section class="intro">
+        {% include 'main/includes/header.html' %}
+        <section class="model-section">
+            <div id="particles-js" aria-hidden="true"></div>
+
+            <aside class="model-sidebar" aria-label="Upload controls">
+                <div class="sidebar-card">
+                    <h2 class="sidebar-heading">Select an image</h2>
+                    <p class="sidebar-subtext">Drop a file below or browse to upload a new observation.</p>
+
+                    <div class="dropzone" id="image-dropzone" role="button" tabindex="0" aria-label="Upload an image for analysis">
+                        <div class="dropzone__icon" aria-hidden="true">+</div>
+                        <p class="dropzone__title">Drag &amp; drop your image</p>
+                        <p class="dropzone__subtitle">or <button type="button" class="dropzone__browse" id="dropzone-browse">browse files</button></p>
+                        <input type="file" id="image-input" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="sidebar-card history-card">
+                    <div class="history-header">
+                        <h3 class="sidebar-heading">Recent uploads</h3>
+                        <button type="button" class="clear-history-btn" id="clear-history-btn" aria-label="Clear recent uploads">Clear</button>
+                    </div>
+                    <p class="sidebar-subtext">Cached locally so you can re-run previous samples.</p>
+                    <div class="cached-grid" id="cached-images" role="list"></div>
+                    <p class="cached-empty" id="cached-empty">No images yet. Upload one to get started.</p>
+                </div>
+            </aside>
+
+            <div class="previewer-container">
+                <div class="preview-frame">
+                    <img src="{% static 'main/assets/example-exoplanet.webp' %}" alt="Selected exoplanet preview" id="preview-image" data-default-src="{% static 'main/assets/example-exoplanet.webp' %}">
+                </div>
+                <div class="preview-meta">
+                    <p class="preview-filename" id="preview-filename">example-exoplanet.webp</p>
+                    <p id="preview-status">Using default sample image</p>
+                </div>
+                <button class="primary-btn" type="button">Analyze Image</button>
+            </div>
+        </section>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        (function () {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+            if (!document.getElementById('particles-js')) {
+                return;
+            }
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 900 } },
+                    color: { value: ['#006FEE', '#00C6FF', '#FFD166'] },
+                    shape: { type: 'circle', stroke: { width: 0, color: '#ffffff' }, polygon: { nb_sides: 5 } },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 2, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 130,
+                        color: '#00A3FF',
+                        opacity: 0.35,
+                        width: 1
+                    },
+                    move: { enable: true, speed: 1.6, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'grab' },
+                        onclick: { enable: false },
+                        resize: true
+                    },
+                    modes: {
+                        grab: { distance: 140, line_linked: { opacity: 0.7 } },
+                        repulse: { distance: 200, duration: 0.4 }
+                    }
+                },
+                retina_detect: true
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            const STORAGE_KEY = 'exoidentifier.cachedUploads';
+            const MAX_ITEMS = 12;
+
+            const dropzone = document.getElementById('image-dropzone');
+            const browseButton = document.getElementById('dropzone-browse');
+            const fileInput = document.getElementById('image-input');
+            const cachedGrid = document.getElementById('cached-images');
+            const emptyState = document.getElementById('cached-empty');
+            const clearButton = document.getElementById('clear-history-btn');
+            const previewImage = document.getElementById('preview-image');
+            const previewFilename = document.getElementById('preview-filename');
+            const previewStatus = document.getElementById('preview-status');
+
+            const defaultPreview = {
+                src: previewImage.getAttribute('data-default-src'),
+                name: previewFilename.textContent,
+                status: 'Using default sample image'
+            };
+
+            function readCache() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return [];
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (_) {
+                    return [];
+                }
+            }
+
+            function writeCache(items) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            }
+
+            let cachedItems = readCache();
+
+            function highlightActive(id) {
+                cachedGrid.querySelectorAll('.cached-thumb').forEach((thumb) => {
+                    if (!id) {
+                        thumb.classList.remove('is-active');
+                        return;
+                    }
+                    thumb.classList.toggle('is-active', thumb.dataset.id === String(id));
+                });
+            }
+
+            function setPreview(item) {
+                if (!item) {
+                    previewImage.src = defaultPreview.src;
+                    previewFilename.textContent = defaultPreview.name;
+                    previewStatus.textContent = defaultPreview.status;
+                    highlightActive(null);
+                    return;
+                }
+                previewImage.src = item.dataUrl;
+                previewFilename.textContent = item.name;
+                const updated = new Date(item.uploadedAt);
+                previewStatus.textContent = `Uploaded ${updated.toLocaleString()}`;
+                highlightActive(item.id);
+            }
+
+            function renderCache() {
+                cachedGrid.innerHTML = '';
+                if (!cachedItems.length) {
+                    emptyState.style.display = 'block';
+                    clearButton.disabled = true;
+                    return;
+                }
+                emptyState.style.display = 'none';
+                clearButton.disabled = false;
+
+                cachedItems.forEach((item) => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'cached-thumb';
+                    button.dataset.id = String(item.id);
+                    button.setAttribute('aria-label', `Use ${item.name}`);
+
+                    const img = document.createElement('img');
+                    img.src = item.dataUrl;
+                    img.alt = item.name;
+                    button.appendChild(img);
+
+                    const label = document.createElement('span');
+                    label.textContent = item.name;
+                    button.appendChild(label);
+
+                    button.addEventListener('click', () => {
+                        setPreview(item);
+                    });
+
+                    cachedGrid.appendChild(button);
+                });
+            }
+
+            function addToCache(item) {
+                cachedItems = [item, ...cachedItems.filter((existing) => existing.id !== item.id)].slice(0, MAX_ITEMS);
+                writeCache(cachedItems);
+                renderCache();
+                setPreview(item);
+            }
+
+            function handleFiles(fileList) {
+                if (!fileList || !fileList.length) return;
+                const file = fileList[0];
+                if (!file.type.startsWith('image/')) {
+                    previewStatus.textContent = 'Please select a valid image file.';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const item = {
+                        id: Date.now(),
+                        name: file.name,
+                        dataUrl: reader.result,
+                        uploadedAt: new Date().toISOString()
+                    };
+                    addToCache(item);
+                    fileInput.value = '';
+                };
+                reader.onerror = () => {
+                    previewStatus.textContent = 'Unable to read that file. Please try again.';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function isFileDrag(event) {
+                return event.dataTransfer && Array.from(event.dataTransfer.types || []).includes('Files');
+            }
+
+            let dragActive = false;
+
+            dropzone.addEventListener('dragenter', (event) => {
+                if (!isFileDrag(event)) return;
+                event.preventDefault();
+                dragActive = true;
+                dropzone.classList.add('dropzone--active');
+            });
+
+            dropzone.addEventListener('dragover', (event) => {
+                if (!isFileDrag(event)) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'copy';
+                dropzone.classList.add('dropzone--active');
+            });
+
+            dropzone.addEventListener('dragleave', (event) => {
+                if (!dragActive) return;
+                const related = event.relatedTarget;
+                if (related && dropzone.contains(related)) {
+                    return;
+                }
+                dragActive = false;
+                dropzone.classList.remove('dropzone--active');
+            });
+
+            dropzone.addEventListener('drop', (event) => {
+                if (!isFileDrag(event)) return;
+                event.preventDefault();
+                dragActive = false;
+                dropzone.classList.remove('dropzone--active');
+                handleFiles(event.dataTransfer.files);
+            });
+
+            dropzone.addEventListener('click', () => fileInput.click());
+            dropzone.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    fileInput.click();
+                }
+            });
+
+            browseButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (event) => handleFiles(event.target.files));
+
+            clearButton.addEventListener('click', () => {
+                cachedItems = [];
+                writeCache(cachedItems);
+                renderCache();
+                setPreview(null);
+            });
+
+            renderCache();
+            if (cachedItems.length) {
+                setPreview(cachedItems[0]);
+            } else {
+                setPreview(null);
+            }
+        })();
+    </script>
+</body>
+
+</html>

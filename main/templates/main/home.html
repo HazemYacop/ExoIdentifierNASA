@@ -1,0 +1,106 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>ExoIdentifier Nasa Space App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'main/home.css' %}">
+</head>
+
+<body>
+    <section class="intro">
+        {% include 'main/includes/header.html' %}
+        <section class="hero-section">
+            <div id="particles-js" aria-hidden="true"></div>
+            <div class="hero-container">
+                <h1 id="hero-title"><span>(</span> Discover &amp; Identify <b>Exoplanets</b> With Our Newly Created Model <span>)</span></h1>
+                <p id="hero-description">Upload your image and let our model analyze it in seconds. Our tool helps you identify whether the object you captured is an exoplanet or not&mdash;making space discovery accessible to everyone.</p>
+                <div class="cta-container">
+                    <a href="/model"><button class="primary-btn">Try Out Now</button></a>
+                    <a href="#"><button class="secondary-btn">Learn More</button></a>
+                </div>
+            </div>
+        </section>
+    </section>
+    <div class="section-separator"></div>
+    <section class="exoplanets">
+        <div class="exoplanets-container">
+            <h2 id="exoplanets-title">What are <span class="gradient-text">exoplanets</span>?</h2>
+            <p id="exoplanets-describtion">Exoplanets are planets that <span>orbit stars outside of our own Solar System</span>, sometimes called “extrasolar planets”. They can be rocky, gaseous, or icy, and vary greatly in size, composition, and atmospheric conditions, with some possibly even supporting liquid water.</p>
+        </div>
+    </section>
+    <section class="exo-section" id="exo-system">
+        <div class="exo-content">
+            <div class="exo-description">
+                <p>Here are some examples for exoplanets systems. Each one discuss a system and its exoplanet in detail.</p>
+                <hr>
+                <ul class="exo-facts">
+                    <li><span>Exoplanet A b</span> *BD+05 4868 A b* is a Mercury-sized rocky exoplanet 140 light-years away in Pegasus. Orbiting its K-type star every 30.5 hours, it is so close that its surface vaporizes, forming a comet-like dust tail.</li>
+                    <li><span>DS Tuc A b</span> *DS Tuc A b* is a young Neptune-like exoplanet, 144 light-years away, orbiting its star every 8.1 days. Discovered in 2019, it shows low orbital tilt, hinting at smooth formation, and is an ideal target for JWST atmospheric studies.</li>
+                    <li><span>GJ 238 b</span> *GJ 238 b* is a Mars-sized terrestrial exoplanet, discovered in 2024 by TESS, orbiting an M-dwarf star every 1.74 days at about 50 light-years away.</li>
+                </ul>
+            </div>
+            <div class="exo-system">
+                <div class="solar-system" aria-hidden="true">
+                    <div class="sun"></div>
+                    <div class="orbit orbit--mercury"></div>
+                    <div class="orbit orbit--venus"></div>
+                    <div class="orbit orbit--earth"></div>
+                    <div class="orbit orbit--mars"></div>
+                    <div class="asteroid-belt"></div>
+                    <div class="orbit orbit--jupiter"></div>
+                    <div class="orbit orbit--saturn"></div>
+                    <div class="orbit orbit--uranus"></div>
+                    <div class="orbit orbit--neptune"></div>
+                    <div class="orbit orbit--pluto"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        (function () {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+            if (!document.getElementById('particles-js')) {
+                return;
+            }
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 900 } },
+                    color: { value: ['#006FEE', '#00C6FF', '#FFD166'] },
+                    shape: { type: 'circle', stroke: { width: 0, color: '#ffffff' }, polygon: { nb_sides: 5 } },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 2, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 130,
+                        color: '#00A3FF',
+                        opacity: 0.35,
+                        width: 1
+                    },
+                    move: { enable: true, speed: 1.6, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'grab' },
+                        onclick: { enable: false },
+                        resize: true
+                    },
+                    modes: {
+                        grab: { distance: 140, line_linked: { opacity: 0.7 } },
+                        repulse: { distance: 200, duration: 0.4 }
+                    }
+                },
+                retina_detect: true
+            });
+        })();
+    </script>
+</body>
+
+</html>

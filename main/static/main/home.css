@@ -1,0 +1,675 @@
+@font-face {
+    font-family: 'Sequel Sans Display';
+    src: url('fonts/Sequel Sans OTF/Sequel Sans Light Disp.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Sequel Sans Display';
+    src: url('fonts/Sequel Sans OTF/Sequel Sans Roman Disp.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Sequel Sans Display';
+    src: url('fonts/Sequel Sans OTF/Sequel Sans Book Disp.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('fonts/Satoshi OTF/Satoshi-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('fonts/Satoshi OTF/Satoshi-MediumItalic.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('fonts/Satoshi OTF/Satoshi-Bold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+body {
+    background-color: #03060D;
+}
+
+.primary-btn {
+    background-color: #006FEE;
+    color: #E4E4E4;
+    border-radius: 10px;
+    width: 230px;
+    height: 50px;
+    border: none;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    box-shadow: 0 0 0 rgba(0, 111, 238, 0);
+}
+
+.primary-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 111, 238, 0.45), 0 0 18px rgba(0, 111, 238, 0.6);
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: #E4E4E4;
+    border-radius: 10px;
+    width: 230px;
+    height: 50px;
+    border: 1px solid #006FEE;
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: .2s;
+}
+
+.secondary-btn:hover {
+    transform: translateY(-4px);
+    background-color: #E4E4E4;
+    color: #03060D;
+    border: 1px solid transparent;
+}
+
+.bold {
+    font-weight: 900;
+}
+
+.home-header {
+    background: linear-gradient(180deg, #03060D 0%, #03060d00 100%);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 0 30px;
+    height: 65px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.team-logo {
+    font-family: 'Sequel Sans Display', 'Sequel Sans', 'Sequel', sans-serif;
+    font-weight: 300;
+    color: #fff;
+    justify-self: start;
+}
+
+.project-title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 18px;
+    letter-spacing: 1.8px;
+    color: #fff;
+    text-align: center;
+    justify-self: center;
+}
+
+.nav-menu-toggler {
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    gap: 6px;
+    cursor: pointer;
+    justify-self: end;
+}
+
+.nav-menu-toggler-line {
+    width: 27px;
+    height: 1px;
+    background-color: #fff;
+}
+
+#nav-menu-line-2 {
+    width: 15px;
+}
+
+#nav-menu-line-3 {
+    width: 0;
+}
+
+.nav-menu-toggler:hover {
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.nav-menu-toggler:hover#nav-menu-line-2 {
+    width: 100%;
+}
+
+.nav-menu-toggler:hover#nav-menu-line-3 {
+    width: 100%;
+}
+
+.intro {
+    background-image: url("assets/home-bg-1.png");
+    background-position: center;
+    background-size: contain;
+}
+
+.hero-section {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(0, #03060D 0%, #03060D 20%, #03060D00 40%, #03060D00 100%);
+}
+.hero-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+    gap: 34px;
+    padding: 160px 0 100px;
+    background-image: url("assets/home-bg-2.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#particles-js {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+#hero-title {
+    font-family: 'Sequel Sans Display', 'Sequel Sans', 'Sequel', sans-serif;
+    font-weight: 300;
+    font-size: 60px;
+    color: #fff;
+    text-align: center;
+    width: 55%;
+}
+#hero-title>span {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 300;
+    color: #ffffff7a;
+}
+
+#hero-title>b {
+    font-weight: 600;
+}
+
+#hero-description {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    color: #CCCCCC;
+    font-size: 14px;
+    width: 40%;
+    text-align: center;
+}
+.cta-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.section-separator {
+    margin: 32px 0 12px;
+    height: 0.5px;
+    background: linear-gradient(90deg, #ffffff1c 0%, #ffffff76 50%, #ffffff1c 100%);
+}
+
+
+#exoplanets-title {
+    color: #FFFFFF;
+    font-family: 'Sequel Sans Display', 'Sequel Sans', 'Sequel', sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #2B66E5 0%, #006FEE 20%, #96B7CC 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#exoplanets-describtion {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 300;
+    color: #cccccca8;
+    font-size: 22px;
+    width: 70%;
+}
+
+#exoplanets-describtion>span {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 500;
+    color: #EBEBEB;
+}
+
+/* Exoplanet showcase refinements */
+.exoplanets {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 80px;
+    background: linear-gradient(180deg, rgba(3, 6, 13, 0.95) 0%, rgba(3, 6, 13, 0.98) 70%, #050608 100%);
+}
+
+.exoplanets-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #006fee00 0%, #006fee1c 100%);
+    border-radius: 80px;
+    padding: 30px 200px 160px;
+    text-align: center;
+    gap: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.exo-section {
+    position: relative;
+    background: radial-gradient(circle at center, rgba(0, 111, 238, 0.15), transparent 65%), linear-gradient(180deg, rgba(3, 6, 13, 0.9) 0%, rgba(3, 6, 13, 0.98) 100%);
+    overflow: hidden;
+}
+
+.exo-section::before,
+.exo-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, transparent 55%);
+    opacity: 0.06;
+    pointer-events: none;
+}
+
+.exo-section::after {
+    background: radial-gradient(circle, rgba(0, 198, 255, 0.35) 0%, transparent 60%);
+    mix-blend-mode: screen;
+    transform: scale(1.6) translateY(-8%);
+}
+
+.exo-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 170px;
+    padding: 70px 30px;
+}
+
+.exo-description {
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.exo-description h2 {
+    font-family: 'Sequel Sans Display', 'Sequel Sans', 'Sequel', sans-serif;
+    font-size: clamp(26px, 2.6vw, 36px);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.exo-description p {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 14px;
+    color: rgba(228, 228, 228, 0.78);
+    line-height: 1.6;
+}
+
+.exo-description hr {
+    border: 0;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+    opacity: 0.4;
+}
+
+.exo-description .exo-note {
+    opacity: 0.65;
+}
+
+.exo-description .exo-author {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: rgba(228, 228, 228, 0.55);
+}
+
+.exo-description code {
+    color: #65B5FF;
+    font-family: 'Satoshi', sans-serif;
+    padding: 2px 8px;
+    background: rgba(0, 111, 238, 0.14);
+    border-radius: 999px;
+}
+
+.exo-facts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 14px;
+}
+
+.exo-facts li {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(228, 237, 255, 0.88);
+    text-align: left;
+    background: rgba(6, 18, 40, 0.85);
+    border: 1px solid rgba(0, 198, 255, 0.18);
+    border-radius: 16px;
+    padding: 14px 18px;
+    box-shadow: 0 12px 24px rgba(2, 8, 20, 0.32);
+}
+
+.exo-facts li span {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.34em;
+    color: rgba(147, 201, 255, 0.75);
+    margin-bottom: 6px;
+}
+
+.exo-system {
+    position: relative;
+    width: min(740px, 90vw);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.solar-system {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: visible;
+    --year-in-seconds: 4s;
+}
+
+.solar-system::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+    background-size: 120px 120px;
+    opacity: 0.12;
+    filter: blur(0.5px);
+    pointer-events: none;
+}
+
+.sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd000 0%, #f9b700 40%, #f48b18 70%, #e06317 100%);
+    box-shadow: 0 0 14px 4px rgba(255, 160, 48, 0.45), 0 0 30px 16px rgba(255, 203, 0, 0.18);
+    z-index: 20;
+}
+
+.orbit,
+.asteroid-belt {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(102, 166, 229, 0.12);
+    animation: orbit-spin linear infinite;
+    transform-origin: center;
+}
+
+.orbit::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    box-shadow: inset 0 6px 0 -2px rgba(0, 0, 0, 0.24);
+}
+
+.orbit--mercury {
+    width: 140px;
+    height: 140px;
+    animation-duration: max(2s, calc(var(--year-in-seconds) * 0.24));
+}
+
+.orbit--mercury::after {
+    width: 8px;
+    height: 8px;
+    background: #9f5e26;
+}
+
+.orbit--venus {
+    width: 200px;
+    height: 200px;
+    animation-duration: max(3s, calc(var(--year-in-seconds) * 0.62));
+}
+
+.orbit--venus::after {
+    width: 16px;
+    height: 16px;
+    background: #beb768;
+}
+
+.orbit--earth {
+    width: 280px;
+    height: 280px;
+    animation-duration: max(4s, calc(var(--year-in-seconds) * 1));
+}
+
+.orbit--earth::after {
+    width: 14px;
+    height: 14px;
+    background: #11abe9;
+    box-shadow: inset 0 6px 0 -2px rgba(0, 0, 0, 0.24), 18px 0 0 -10px rgba(180, 180, 180, 0.8);
+}
+
+.orbit--mars {
+    width: 360px;
+    height: 360px;
+    animation-duration: max(6s, calc(var(--year-in-seconds) * 1.88));
+}
+
+.orbit--mars::after {
+    width: 10px;
+    height: 10px;
+    background: #cf3921;
+}
+
+.asteroid-belt {
+    width: 420px;
+    height: 420px;
+    border: 1px solid transparent;
+    animation-duration: clamp(10s, calc(var(--year-in-seconds) * 3.5), 45s);
+    overflow: hidden;
+}
+
+.asteroid-belt::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    margin: -100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0.5px, transparent 1px);
+    background-size: 9px 9px;
+    opacity: 0.35;
+}
+
+.orbit--jupiter {
+    width: 500px;
+    height: 500px;
+    animation-duration: clamp(18s, calc(var(--year-in-seconds) * 11.86), 65s);
+}
+
+.orbit--jupiter::after {
+    width: 24px;
+    height: 24px;
+    background: #c76e2a;
+}
+
+.orbit--saturn {
+    width: 620px;
+    height: 620px;
+    animation-duration: clamp(28s, calc(var(--year-in-seconds) * 29.5), 85s);
+}
+
+.orbit--saturn::after {
+    width: 20px;
+    height: 20px;
+    background: #e7c194;
+    box-shadow: inset 0 6px 0 -2px rgba(0, 0, 0, 0.24);
+}
+
+.orbit--saturn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 36px;
+    height: 12px;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(152, 118, 65, 0.7), 4px 0 0 3px rgba(152, 118, 65, 0.32), -4px 0 0 3px rgba(152, 118, 65, 0.32);
+    animation: orbit-spin clamp(28s, calc(var(--year-in-seconds) * 29.5), 85s) linear infinite reverse;
+}
+
+.orbit--uranus {
+    width: 710px;
+    height: 710px;
+    animation-duration: clamp(36s, calc(var(--year-in-seconds) * 84), 110s);
+}
+
+.orbit--uranus::after {
+    width: 18px;
+    height: 18px;
+    background: #b5e3e3;
+}
+
+.orbit--neptune {
+    width: 820px;
+    height: 820px;
+    animation-duration: clamp(48s, calc(var(--year-in-seconds) * 165), 130s);
+}
+
+.orbit--neptune::after {
+    width: 18px;
+    height: 18px;
+    background: #175e9e;
+}
+
+.orbit--pluto {
+    width: 940px;
+    height: 940px;
+    animation-duration: clamp(60s, calc(var(--year-in-seconds) * 248), 150s);
+    opacity: 0.6;
+}
+
+.orbit--pluto::after {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.85);
+}
+
+@keyframes orbit-spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(-360deg);
+    }
+}
+
+@media (max-width: 1024px) {
+    .exoplanets {
+        padding: 56px 0 28px;
+    }
+
+    .exoplanets-container {
+        width: 90%;
+        padding: 32px 48px 120px;
+        border-radius: 56px;
+    }
+
+    .exo-section {
+        padding: 72px 18px 140px;
+        margin-top: -16px;
+    }
+}
+
+@media (max-width: 720px) {
+    .exoplanets-container {
+        padding: 28px 24px 100px;
+        border-radius: 44px;
+    }
+
+    .exo-content {
+        flex-direction: column;
+    }
+
+    .exo-description {
+        max-width: 520px;
+        text-align: center;
+        align-items: center;
+    }
+
+    .exo-facts li {
+        text-align: center;
+    }
+}
+
+
+
