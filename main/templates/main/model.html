@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <title>{{ page_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="{% static 'main/common.css' %}">
     <link rel="stylesheet" href="{% static 'main/model.css' %}">
 </head>
@@ -157,6 +158,7 @@
                 previewStatus.textContent = defaultStatus;
                 resultBox.hidden = true;
                 errorDisplay.hidden = true;
+                analyzeButton.dataset.loading = 'true';
             }
 
             function setPreview(selection) {
@@ -318,19 +320,29 @@
 
             async function selectionToFile(selection) {
                 if (!selection) {
-                    const response = await fetch(previewImage.dataset.defaultSrc);
+                    const response = await fetch(previewImage.dataset.defaultSrc, { credentials: 'same-origin' });
+                    if (!response.ok) {
+                        throw new Error('Unable to load the sample image for analysis.');
+                    }
                     const blob = await response.blob();
                     return new File([blob], defaultName, { type: blob.type || 'image/png' });
                 }
                 if (selection.source === 'file' && selection.file) {
                     return selection.file;
                 }
-                const response = await fetch(selection.dataUrl);
+                const response = await fetch(selection.dataUrl, { credentials: 'same-origin' });
+                if (!response.ok) {
+                    throw new Error('Unable to access the cached upload. Please re-upload the image.');
+                }
                 const blob = await response.blob();
                 return new File([blob], selection.name, { type: blob.type || 'image/png' });
             }
 
             function getCsrfToken() {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta && meta.content) {
+                    return meta.content;
+                }
                 const match = document.cookie.match(/csrftoken=([^;]+)/);
                 return match ? decodeURIComponent(match[1]) : '';
             }
@@ -340,17 +352,17 @@
                 const formData = new FormData();
                 formData.append('image', file, file.name);
 
+                const csrfToken = getCsrfToken();
                 const response = await fetch(analyzeUrl, {
                     method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCsrfToken(),
-                    },
+                    credentials: 'same-origin',
+                    headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
                     body: formData,
                 });
 
                 if (!response.ok) {
                     const payload = await response.json().catch(() => ({}));
-                    const errorMessage = payload.error || 'Analysis failed. Please try again later.';
+                    const errorMessage = payload.error || `Server returned ${response.status}`;
                     throw new Error(errorMessage);
                 }
 
@@ -358,23 +370,29 @@
             }
 
             analyzeButton.addEventListener('click', async () => {
+                console.debug('Analyze button clicked', currentSelection);
                 errorDisplay.hidden = true;
                 analyzeButton.disabled = true;
+                analyzeButton.dataset.loading = 'true';
                 analyzeButton.textContent = 'Analyzing...';
                 previewStatus.textContent = 'Sending image to the model...';
 
                 try {
+                    console.debug('Requesting analysis from', analyzeUrl);
                     const data = await analyzeCurrentSelection();
+                    console.debug('Model response', data);
                     const isExoplanet = data.label === 'exoplanet';
                     resultLabel.textContent = isExoplanet ? 'Likely an exoplanet' : 'Likely not an exoplanet';
                     resultConfidence.textContent = `Confidence: ${(data.probability * 100).toFixed(1)}%`;
                     resultBox.hidden = false;
                     previewStatus.textContent = 'Analysis complete.';
                 } catch (error) {
+                    console.error('Analysis failed', error);
                     errorDisplay.textContent = error.message || 'Something went wrong while analyzing the image.';
                     errorDisplay.hidden = false;
                     previewStatus.textContent = 'Unable to analyze this image.';
                 } finally {
+                    analyzeButton.dataset.loading = 'false';
                     analyzeButton.disabled = false;
                     analyzeButton.textContent = 'Analyze Image';
                 }
